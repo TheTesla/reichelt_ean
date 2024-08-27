@@ -18,6 +18,8 @@
     const linkPattern = "^https\:\/\/www\.reichelt\.de";
     const filterPattern1 = /EAN[ <>=_"a-zA-Z\/\n\r]*(\d+)/;
     const filterPattern2 = /Artikelnummer des Herstellers[ <>=_"a-zA-Z\/\n\r]*propvalue">([- _a-zA-Z0-9]*)/;
+    const filterPattern3 = /Artikel-Nr.:<\/b>[ \n\r]*([- _a-zA-Z0-9]*)/;
+    const filterPattern4 = /anzahlInputArticle[- <>(),;\[\]=_"a-zA-Z0-9\/\n\r]*value="(\d+)/;
 
     // Funktion zum Extrahieren der gewünschten Information aus einer Zielseite
     function extractInformation(html) {
@@ -36,6 +38,8 @@
         return xmlHttp.responseText;
     }
 
+    var csv = "Reichelt.de\tEAN\tHerstellerNr\tAnzahl\n";
+
     // Alle Links auf der aktuellen Seite durchgehen
     const links = document.querySelectorAll('a.notranslate[href]');
     links.forEach(link => {
@@ -49,11 +53,16 @@
             var trgthtml = httpGet(url);
             var ean = trgthtml.match(filterPattern1);
             var artnr = trgthtml.match(filterPattern2);
+            var rartnr = trgthtml.match(filterPattern3);
+            var anz = trgthtml.match(filterPattern4);
             console.log(ean);
             console.log(artnr);
+            console.log(rartnr);
+            console.log(anz);
             link.textContent = link.textContent + (ean == null ? "" : " - EAN: " + ean[1]) + (artnr == null ? "" : " - ArtNr.: " + artnr[1]);
+            csv = csv + (rartnr == null ? "" : rartnr[1]) + "\t" + (ean == null ? "" : ean[1]) + "\t" + (artnr == null ? "" : artnr[1]) + "\t" + (anz == null ? "" : anz[1]) + "\n";
         }
-
+        console.log(csv);
         
     });
 })();
