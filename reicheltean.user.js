@@ -18,7 +18,7 @@
     const linkPattern = "^https\:\/\/www\.reichelt\.de";
     const filterPattern1 = /EAN[ <>=_"a-zA-Z\/\n\r]*(\d+)/;
     const filterPattern2 = /Artikelnummer des Herstellers[ <>=_"a-zA-Z\/\n\r]*propvalue">([- _a-zA-Z0-9]*)/;
-    const filterPattern3 = /Artikel-Nr.:<\/b>[ \n\r]*([- _a-zA-Z0-9]*)/;
+    const filterPattern3 = /Artikel-Nr.:<\/b>[ \n\r]*([-\/,; _a-zA-Z0-9]*)/;
     const filterPattern4 = /anzahlInputArticle[- <>(),;\[\]=_"a-zA-Z0-9\/\n\r]*value="(\d+)/;
 
     // Funktion zum Extrahieren der gewünschten Information aus einer Zielseite
