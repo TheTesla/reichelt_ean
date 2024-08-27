@@ -20,6 +20,7 @@
     const filterPattern2 = /Artikelnummer des Herstellers[ <>=_"a-zA-Z\/\n\r]*propvalue">([- _a-zA-Z0-9]*)/;
     const filterPattern3 = /Artikel-Nr.:<\/b>[ \n\r]*([-\/,; _a-zA-Z0-9]*)/;
     const filterPattern4 = /anzahlInputArticle[- <>(),;\[\]=_"a-zA-Z0-9\/\n\r]*value="(\d+)/;
+    const filterPattern5 = /av_articleheader.*itemprop="name">(.*)<\/span/;
 
     // Funktion zum Extrahieren der gewünschten Information aus einer Zielseite
     function extractInformation(html) {
@@ -38,7 +39,15 @@
         return xmlHttp.responseText;
     }
 
-    var csv = "Reichelt.de\tEAN\tHerstellerNr\tAnzahl\n";
+    function decodeHTMLEntities(text) {
+        // Erstelle ein temporäres Element
+        let temp = document.createElement('textarea');
+        // Weise den Text dem temporären Element zu (dabei wird der Text automatisch dekodiert)
+        temp.innerHTML = text;
+        // Gib den dekodierten Text zurück
+        return temp.value;
+    }
+    var csv = "\"Artikelbezeichnung\"\t\"Artikelbeschreibung\"\t\"EAN\"\t\"Hersteller-Nr.\"\t\"Anzahl\"\n";
 
     // Alle Links auf der aktuellen Seite durchgehen
     const links = document.querySelectorAll('a.notranslate[href]');
@@ -55,12 +64,14 @@
             var artnr = trgthtml.match(filterPattern2);
             var rartnr = trgthtml.match(filterPattern3);
             var anz = trgthtml.match(filterPattern4);
+            var bez = trgthtml.match(filterPattern5);
             console.log(ean);
             console.log(artnr);
             console.log(rartnr);
             console.log(anz);
+            console.log(bez);
             link.textContent = link.textContent + (ean == null ? "" : " - EAN: " + ean[1]) + (artnr == null ? "" : " - ArtNr.: " + artnr[1]);
-            csv = csv + (rartnr == null ? "" : rartnr[1]) + "\t" + (ean == null ? "" : ean[1]) + "\t" + (artnr == null ? "" : artnr[1]) + "\t" + (anz == null ? "" : anz[1]) + "\n";
+            csv = csv + "\"" + (rartnr == null ? "" : rartnr[1]) + "\"\t\"" + (bez == null ? "" : decodeHTMLEntities(bez[1])) + "\"\t\"" + (ean == null ? "" : ean[1]) + "\"\t\"" + (artnr == null ? "" : artnr[1]) + "\"\t" + (anz == null ? "" : anz[1]) + "\n";
         }
         console.log(csv);
         
